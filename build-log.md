@@ -127,3 +127,14 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - New `Accessibility.test.tsx`: accessible names on every control, one h1 and no duplicate ids on all 8 screen states, a keyboard-only Today flow, page titles, and when the animation plays.
 - Plan changes: None
 - Tests: 243 passed, 0 failed
+
+## Slice 10 · Ship
+- Date: 2026-11-20
+- My note: "This looks good. We'll deploy it to Github pages after I push the remaining changes."
+- What changed:
+  - `vite.config.ts`: `base: './'`, so the built site works at a domain root and under a sub-path (GitHub Pages) with no changes. Hash-based screens need no redirect rules.
+  - Version 1.0.0 in `package.json` and `package-lock.json`.
+  - New `README.md`: what the app does, how streaks count, where the data lives, how to run it in PowerShell, a scripts table, deploy steps for GitHub Pages, Netlify, Vercel and Cloudflare Pages, the project structure, and ideas for later.
+  - Production build (84 KB JS gzipped) checked in the browser at the root and under `/habit-tracker/`: adding and checking off a habit, reloading on a detail link, Back, no console errors, and 375 px and 1440 px widths. Every item in the definition of done is met.
+- Plan changes: None
+- Tests: 243 passed, 0 failed
