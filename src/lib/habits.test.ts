@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 import {
   addHabit,
   createHabit,
+  habitStats,
   isDoneOn,
   progressOn,
   toggleCompletion,
@@ -99,5 +100,29 @@ describe('progressOn', () => {
     data = toggleCompletion(data, 'h1', TODAY)
     data = toggleCompletion(data, 'h2', '2026-11-19')
     expect(progressOn(data, TODAY)).toEqual({ done: 1, total: 2 })
+  })
+})
+
+describe('habitStats', () => {
+  it('current streak, best streak and total for one habit', () => {
+    let data = withHabits()
+    // Created Nov 20 in withHabits(); use a habit created earlier instead.
+    data = addHabit(data, createHabit({ name: 'Old', color: 'red' }, '2026-11-01', 'h3'))
+    for (const date of ['2026-11-02', '2026-11-03', '2026-11-04', '2026-11-19', TODAY]) {
+      data = toggleCompletion(data, 'h3', date)
+    }
+    const habit = data.habits.find((h) => h.id === 'h3')!
+    expect(habitStats(data, habit, TODAY)).toEqual({ current: 2, best: 3, total: 5 })
+  })
+
+  it('a habit with no completions', () => {
+    const data = withHabits()
+    expect(habitStats(data, data.habits[0]!, TODAY)).toEqual({ current: 0, best: 0, total: 0 })
+  })
+
+  it('total ignores dates before createdAt and after today', () => {
+    let data = withHabits()
+    for (const date of ['2026-11-18', TODAY, '2026-11-22']) data = toggleCompletion(data, 'h1', date)
+    expect(habitStats(data, data.habits[0]!, TODAY).total).toBe(1)
   })
 })

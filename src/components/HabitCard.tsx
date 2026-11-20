@@ -2,23 +2,34 @@ import { getHabitColor } from '../lib/colors.ts'
 import type { Habit } from '../lib/types.ts'
 import StreakBadge from './StreakBadge.tsx'
 
-type Props = { habit: Habit; done: boolean; streak: number; onToggle: () => void }
+type Props = {
+  habit: Habit
+  done: boolean
+  streak: number
+  onToggle: () => void
+  onOpen: () => void
+}
 
-export default function HabitCard({ habit, done, streak, onToggle }: Props) {
+/** The name opens the habit's detail screen; the checkbox checks it off for today. */
+export default function HabitCard({ habit, done, streak, onToggle, onOpen }: Props) {
   const color = getHabitColor(habit.color)
 
   return (
-    <label className={done ? 'habit-card is-done' : 'habit-card'}>
-      <span className="color-dot" style={{ backgroundColor: color.hex }} aria-hidden="true" />
-      <span className="habit-name">{habit.name}</span>
-      <StreakBadge days={streak} />
-      <input
-        type="checkbox"
-        className="habit-check"
-        checked={done}
-        onChange={onToggle}
-        aria-label={`${habit.name} done today`}
-      />
-    </label>
+    <div className={done ? 'habit-card is-done' : 'habit-card'}>
+      <button type="button" className="habit-open" data-habit-id={habit.id} onClick={onOpen}>
+        <span className="color-dot" style={{ backgroundColor: color.hex }} aria-hidden="true" />
+        <span className="habit-name">{habit.name}</span>
+        <StreakBadge days={streak} />
+      </button>
+      <label className="habit-check-area">
+        <input
+          type="checkbox"
+          className="habit-check"
+          checked={done}
+          onChange={onToggle}
+          aria-label={`${habit.name} done today`}
+        />
+      </label>
+    </div>
   )
 }

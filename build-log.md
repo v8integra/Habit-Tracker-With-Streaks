@@ -73,3 +73,16 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - `App.test.tsx`: 7 new streak tests (none, the badge text and what screen readers hear, separate streaks per card, a streak ending yesterday, a broken streak, check and uncheck, a new habit).
 - Plan changes: None
 - Tests: 137 passed, 0 failed
+
+## Slice 6 · Habit detail + heatmap
+- Date: 2026-11-20
+- My note: "Code is clean. App works good."
+- What changed:
+  - New lib code with tests:
+    - `heatmap.ts`: the 12-week grid (Sunday-to-Saturday columns, oldest on the left, month labels, empty future days) and `canToggleDay` (the last 7 days, not before `createdAt`).
+    - `habitStats`: current streak, best streak and total.
+  - Detail screen: `HabitDetail`, `StatTile`, `Heatmap` (a table with weekday rows) and `HeatmapCell`. The last 7 days are toggle buttons. Older days are read-only, but screen readers still hear each one.
+  - The habit card's name now opens the detail screen, and the checkbox has its own tap area. A new `useRoute` hook keeps the detail screen in `#/habit/<id>`, so browser and phone Back return to Today, and focus goes back to the card.
+  - 40 new tests (detail screen, heatmap grid, `habitStats`, reading the habit ID from the URL). The slice 4 test where tapping the name checked the habit off now checks that it opens the detail screen.
+- Plan changes: None
+- Tests: 177 passed, 0 failed

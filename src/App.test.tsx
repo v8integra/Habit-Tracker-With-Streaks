@@ -131,11 +131,13 @@ describe('Today page', () => {
     expect(progress()).toHaveAttribute('aria-valuetext', '0 of 2 done')
   })
 
-  it('clicking the habit name also toggles it', async () => {
+  it('clicking the habit name opens its detail screen, without checking it off', async () => {
     const { user } = setup()
     await addHabit(user, 'Read')
     await user.click(screen.getByText('Read'))
-    expect(screen.getByRole('checkbox', { name: 'Read done today' })).toBeChecked()
+    expect(screen.getByRole('heading', { level: 1, name: 'Read' })).toBeInTheDocument()
+    await user.click(screen.getByRole('button', { name: 'Today' }))
+    expect(screen.getByRole('checkbox', { name: 'Read done today' })).not.toBeChecked()
   })
 
   it('keeps habits and check-offs after a refresh', async () => {
@@ -212,9 +214,9 @@ describe('Streaks on cards', () => {
 
   function card(name: string) {
     const box = screen.getByRole('checkbox', { name: `${name} done today` })
-    const label = box.closest('label')
-    if (label === null) throw new Error(`No card for ${name}`)
-    return label
+    const item = box.closest('li')
+    if (item === null) throw new Error(`No card for ${name}`)
+    return item
   }
 
   beforeEach(() => {

@@ -1,5 +1,6 @@
 import type { DateKey } from './dates.ts'
 import { NAME_MAX_LENGTH } from './storage.ts'
+import { bestStreak, countableDates, currentStreak } from './streaks.ts'
 import type { AppData, Habit } from './types.ts'
 
 /** An error message for an invalid habit name, or null if it's fine. */
@@ -40,4 +41,16 @@ export function toggleCompletion(data: AppData, habitId: string, date: DateKey):
 export function progressOn(data: AppData, date: DateKey): { done: number; total: number } {
   const done = data.habits.filter((habit) => isDoneOn(data, habit.id, date)).length
   return { done, total: data.habits.length }
+}
+
+export type HabitStats = { current: number; best: number; total: number }
+
+/** Current streak, best streak and total completed days for one habit. */
+export function habitStats(data: AppData, habit: Habit, today: DateKey): HabitStats {
+  const dates = data.completions[habit.id] ?? []
+  return {
+    current: currentStreak(dates, habit.createdAt, today),
+    best: bestStreak(dates, habit.createdAt, today),
+    total: countableDates(dates, habit.createdAt, today).length,
+  }
 }

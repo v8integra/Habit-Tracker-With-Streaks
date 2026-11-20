@@ -4,4 +4,6 @@ import { afterEach } from 'vitest'
 
 afterEach(() => {
   cleanup()
+  // Each test starts on the Today screen with no habit in the URL.
+  window.history.replaceState(null, '', '/')
 })
