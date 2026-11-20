@@ -13,8 +13,20 @@
   --error: #c62828;
   --danger: #c62828;
   --danger-text: #ffffff;
+  --hover: rgb(0 0 0 / 4%);
+  --cell-empty: #e8e8e6;
   --radius: 12px;
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Habit colors: darker shades on light backgrounds (all ≥ 3.75:1 vs an empty day). */
+  --habit-red: #dc2626;
+  --habit-orange: #c2410c;
+  --habit-yellow: #a16207;
+  --habit-green: #15803d;
+  --habit-teal: #0f766e;
+  --habit-blue: #2563eb;
+  --habit-purple: #7c3aed;
+  --habit-pink: #db2777;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -32,6 +44,18 @@
     --error: #ef6b6b;
     --danger: #ef6b6b;
     --danger-text: #1a0606;
+    --hover: rgb(255 255 255 / 5%);
+    --cell-empty: #333336;
+
+    /* Lighter shades on dark backgrounds (all ≥ 4.5:1 vs an empty day). */
+    --habit-red: #f87171;
+    --habit-orange: #fb923c;
+    --habit-yellow: #facc15;
+    --habit-green: #4ade80;
+    --habit-teal: #2dd4bf;
+    --habit-blue: #60a5fa;
+    --habit-purple: #a78bfa;
+    --habit-pink: #f472b6;
   }
 }
 
@@ -53,6 +77,38 @@ h1,
 h2,
 p {
   margin: 0;
+}
+
+/* One focus ring for everything you can reach with the keyboard. */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Headings get focus from code (on screen changes), not from Tab: no ring. */
+h1[tabindex='-1']:focus {
+  outline: none;
+}
+
+.button:hover {
+  filter: brightness(0.96);
+}
+
+@media (prefers-color-scheme: dark) {
+  .button:hover {
+    filter: brightness(1.15);
+  }
+}
+
+/* People who ask for less motion get none. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }
 
 /* Text for screen readers only */
@@ -163,6 +219,37 @@ p {
 
 .habit-card.is-done {
   background: var(--done-bg);
+}
+
+.habit-card {
+  transition: background-color 200ms ease;
+}
+
+.habit-open:hover,
+.habit-check-area:hover {
+  background: var(--hover);
+}
+
+.habit-check-area {
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+/* Check-off: a quick pop on the checkbox and the streak, only when you check it. */
+@keyframes check-pop {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.habit-card.just-done .habit-check,
+.habit-card.just-done .streak {
+  animation: check-pop 280ms ease-out;
 }
 
 .color-dot {
@@ -311,10 +398,11 @@ p {
   margin-bottom: 8px;
 }
 
+/* 8 × 32px + 7 × 6px = 298px: fits on one line inside the form at 375px wide. */
 .swatches {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
 .swatch {
@@ -480,7 +568,7 @@ p {
   padding: 0;
   border: 0;
   border-radius: 3px;
-  background: var(--border);
+  background: var(--cell-empty);
 }
 
 .heatmap-cell.is-done {

@@ -43,9 +43,9 @@ describe('buildHeatmap', () => {
     expect(sunday[11]!.cells.filter((c) => !c.future).map((c) => c.date)).toEqual(['2026-11-22'])
   })
 
-  it('labels the first week and each new month', () => {
+  it('labels each new month, skipping a first label that would crowd the next', () => {
     expect(grid.map((w) => w.monthLabel)).toEqual([
-      'Aug', // Aug 30
+      null, // Aug 30: only 2 days of August, and September starts next week
       'Sep', // Sep 6
       null,
       null,
@@ -58,6 +58,11 @@ describe('buildHeatmap', () => {
       null,
       null,
     ])
+  })
+
+  it('keeps the first label when the next week is the same month', () => {
+    // Starts Sunday, Aug 23: the next week (Aug 30) is still August.
+    expect(buildHeatmap('2026-11-13')[0]!.monthLabel).toBe('Aug')
   })
 
   it('crosses a year boundary', () => {

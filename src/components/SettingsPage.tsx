@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, type ChangeEvent } from 'react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { MAX_BACKUP_BYTES, backupFileName, parseBackup, serializeBackup } from '../lib/backup.ts'
 import type { DateKey } from '../lib/dates.ts'
 import { downloadTextFile } from '../lib/download.ts'
@@ -37,6 +38,7 @@ function clearMessage(current: number): string {
 
 export default function SettingsPage({ data, today, onBack, onReplaceAll }: Props) {
   const [pending, setPending] = useState<Pending>(null)
+  useDocumentTitle('Settings')
   const [message, setMessage] = useState<Message>(null)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const fileRef = useRef<HTMLInputElement>(null)

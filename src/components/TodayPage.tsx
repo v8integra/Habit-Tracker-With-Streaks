@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { StorageNotice as Notice } from '../hooks/useAppData.ts'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { nextUnusedColor } from '../lib/colors.ts'
 import { formatLongDate, type DateKey } from '../lib/dates.ts'
 import { isDoneOn, progressOn } from '../lib/habits.ts'
@@ -43,6 +44,7 @@ export default function TodayPage({
   const { done, total } = progressOn(data, today)
   const hasHabits = data.habits.length > 0
   const headingRef = useRef<HTMLHeadingElement>(null)
+  useDocumentTitle(null)
 
   useEffect(() => {
     if (focusKey === null) return

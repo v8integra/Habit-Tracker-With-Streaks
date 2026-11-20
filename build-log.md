@@ -111,3 +111,19 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - 37 new tests (`Settings.test.tsx`, `backup.test.ts`, routes). The browser check caught the wording "all 1 habit", now fixed.
 - Plan changes: None
 - Tests: 235 passed, 0 failed
+
+## Slice 9 · Polish
+- Date: 2026-11-20
+- My note: "Everything looks good, app runs good. No issues noted."
+- What changed:
+  - Contrast: habit colors are now theme-aware CSS variables (darker in light mode, lighter in dark mode), so a done heatmap day stands out at least 3.75:1 against an empty day. All text already passed WCAG AA in both themes.
+  - Keyboard and motion:
+    - One focus ring for everything reachable with Tab, and hover states.
+    - A check-off pop on the checkbox and streak, which plays only when checking.
+    - Respects "reduce motion".
+  - Layout and page details:
+    - The 8 swatches fit on one row at 375 px, and the crowded first month label in the heatmap is dropped.
+    - Each screen sets the page title (`useDocumentTitle`), and there's a new checkmark favicon plus description and theme-color meta tags.
+  - New `Accessibility.test.tsx`: accessible names on every control, one h1 and no duplicate ids on all 8 screen states, a keyboard-only Today flow, page titles, and when the animation plays.
+- Plan changes: None
+- Tests: 243 passed, 0 failed

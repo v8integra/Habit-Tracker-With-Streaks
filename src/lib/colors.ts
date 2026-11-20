@@ -1,17 +1,18 @@
 /**
- * The 8 preset habit colors. Habits store the `id`; the hex value is only used
- * for display, so it can be tuned later without touching saved data.
- * Mid-tone values chosen to read on both light and dark backgrounds.
+ * The 8 preset habit colors. Habits store the `id`. Each color is a CSS
+ * variable (defined in styles.css) with a darker shade in light mode and a
+ * lighter one in dark mode, so a done day in the heatmap stands out at least
+ * 3:1 against both the page and an empty day.
  */
 export const HABIT_COLORS = [
-  { id: 'red', name: 'Red', hex: '#e5484d' },
-  { id: 'orange', name: 'Orange', hex: '#f97316' },
-  { id: 'yellow', name: 'Yellow', hex: '#eab308' },
-  { id: 'green', name: 'Green', hex: '#22c55e' },
-  { id: 'teal', name: 'Teal', hex: '#14b8a6' },
-  { id: 'blue', name: 'Blue', hex: '#3b82f6' },
-  { id: 'purple', name: 'Purple', hex: '#8b5cf6' },
-  { id: 'pink', name: 'Pink', hex: '#ec4899' },
+  { id: 'red', name: 'Red', value: 'var(--habit-red)' },
+  { id: 'orange', name: 'Orange', value: 'var(--habit-orange)' },
+  { id: 'yellow', name: 'Yellow', value: 'var(--habit-yellow)' },
+  { id: 'green', name: 'Green', value: 'var(--habit-green)' },
+  { id: 'teal', name: 'Teal', value: 'var(--habit-teal)' },
+  { id: 'blue', name: 'Blue', value: 'var(--habit-blue)' },
+  { id: 'purple', name: 'Purple', value: 'var(--habit-purple)' },
+  { id: 'pink', name: 'Pink', value: 'var(--habit-pink)' },
 ] as const
 
 export type HabitColor = (typeof HABIT_COLORS)[number]

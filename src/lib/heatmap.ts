@@ -36,6 +36,11 @@ export function buildHeatmap(today: DateKey, weeks: number = HEATMAP_WEEKS): Hea
     previousMonth = month
     grid.push({ cells, monthLabel })
   }
+
+  // If the second week already starts a new month, the first label would sit
+  // right against it ("Aug Sep"), so leave the first one off.
+  if (grid.length > 1 && grid[1]!.monthLabel !== null) grid[0]!.monthLabel = null
+
   return grid
 }
 

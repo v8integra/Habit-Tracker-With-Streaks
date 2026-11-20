@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useDocumentTitle } from '../hooks/useDocumentTitle.ts'
 import { getHabitColor } from '../lib/colors.ts'
 import type { DateKey } from '../lib/dates.ts'
 import { habitStats } from '../lib/habits.ts'
@@ -36,6 +37,7 @@ export default function HabitDetail({
   const color = getHabitColor(habit.color)
   const stats = habitStats(data, habit, today)
   const [mode, setMode] = useState<Mode>('view')
+  useDocumentTitle(habit.name)
   const headingRef = useRef<HTMLHeadingElement>(null)
   const editRef = useRef<HTMLButtonElement>(null)
   const deleteRef = useRef<HTMLButtonElement>(null)
@@ -68,7 +70,7 @@ export default function HabitDetail({
       <header className="detail-header">
         <span
           className="color-dot color-dot-large"
-          style={{ backgroundColor: color.hex }}
+          style={{ backgroundColor: color.value }}
           aria-hidden="true"
         />
         <h1 ref={headingRef} tabIndex={-1}>
@@ -125,7 +127,7 @@ export default function HabitDetail({
           completions={data.completions[habit.id] ?? []}
           createdAt={habit.createdAt}
           today={today}
-          color={color.hex}
+          color={color.value}
           onToggleDay={onToggleDay}
         />
       </section>

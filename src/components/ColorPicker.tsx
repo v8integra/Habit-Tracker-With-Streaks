@@ -21,7 +21,7 @@ export default function ColorPicker({ value, onChange }: Props) {
               onChange={() => onChange(color.id)}
               aria-label={color.name}
             />
-            <span className="swatch-color" style={{ backgroundColor: color.hex }} />
+            <span className="swatch-color" style={{ backgroundColor: color.value }} />
           </label>
         ))}
       </div>
