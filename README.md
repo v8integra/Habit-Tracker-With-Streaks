@@ -62,8 +62,8 @@ Pick one host. For all of them the settings are the same:
 ### GitHub Pages
 
 1. On GitHub, go to the repository's **Settings → Pages**, and set **Source** to **GitHub Actions**.
-2. Add a workflow at `.github/workflows/deploy.yml` that installs, builds and uploads `dist/` with `actions/upload-pages-artifact` and `actions/deploy-pages`. GitHub suggests a "Static HTML" starter workflow on the same Pages screen; change its upload `path` to `dist` and add `npm ci` and `npm run build` steps before the upload.
-3. Push to `main`. The site goes live at `https://<your-user>.github.io/Habit-Tracker-With-Streaks/`.
+2. The workflow is already in [`.github/workflows/deploy.yml`](.github/workflows/deploy.yml): it installs, runs the tests, builds, and publishes `dist/`. (Don't use "Deploy from a branch": that serves the source files, and the page stays blank.)
+3. Push to `main`, or run the workflow by hand from the **Actions** tab. The site goes live at `https://<your-user>.github.io/Habit-Tracker-With-Streaks/`.
 
 ### Netlify
 
