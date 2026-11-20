@@ -72,7 +72,15 @@ export function useAppData() {
     [update],
   )
 
+  /** Replaces everything, e.g. with an imported backup or empty data. */
+  const replaceAll = useCallback(
+    (next: AppData) => {
+      update(() => next)
+    },
+    [update],
+  )
+
   const dismissNotice = useCallback(() => setNotice(null), [])
 
-  return { data, notice, add, toggle, edit, remove, dismissNotice }
+  return { data, notice, add, toggle, edit, remove, replaceAll, dismissNotice }
 }

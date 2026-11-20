@@ -1,24 +1,40 @@
 import { useCallback, useEffect, useState } from 'react'
 
+export type Route = { name: 'today' } | { name: 'habit'; habitId: string } | { name: 'settings' }
+
+const TODAY: Route = { name: 'today' }
 const HABIT_HASH = /^#\/habit\/([^/]+)$/
 
-/** The habit id in "#/habit/<id>", or null for the Today view. */
-export function habitIdFromHash(hash: string): string | null {
+/** Reads the screen from the URL hash: "#/habit/<id>", "#/settings", or Today. */
+export function routeFromHash(hash: string): Route {
+  if (hash === '#/settings') return { name: 'settings' }
   const match = HABIT_HASH.exec(hash)
-  return match ? decodeURIComponent(match[1]!) : null
+  if (match) return { name: 'habit', habitId: decodeURIComponent(match[1]!) }
+  return TODAY
 }
 
-type HistoryState = { habitDetail: true } | null
+export function hashFor(route: Route): string {
+  switch (route.name) {
+    case 'habit':
+      return `#/habit/${encodeURIComponent(route.habitId)}`
+    case 'settings':
+      return '#/settings'
+    case 'today':
+      return ''
+  }
+}
+
+type HistoryState = { fromApp: true } | null
 
 /**
- * Which screen is showing: Today, or one habit's detail. Kept in the URL hash
- * so the browser or phone back button returns to Today.
+ * Which screen is showing. Kept in the URL hash so the browser or phone back
+ * button returns to Today.
  */
 export function useRoute() {
-  const [habitId, setHabitId] = useState(() => habitIdFromHash(window.location.hash))
+  const [route, setRoute] = useState(() => routeFromHash(window.location.hash))
 
   useEffect(() => {
-    const sync = () => setHabitId(habitIdFromHash(window.location.hash))
+    const sync = () => setRoute(routeFromHash(window.location.hash))
     window.addEventListener('popstate', sync)
     window.addEventListener('hashchange', sync)
     return () => {
@@ -27,23 +43,23 @@ export function useRoute() {
     }
   }, [])
 
-  const openHabit = useCallback((id: string) => {
-    const state: HistoryState = { habitDetail: true }
-    window.history.pushState(state, '', `#/habit/${encodeURIComponent(id)}`)
-    setHabitId(id)
+  const navigate = useCallback((next: Route) => {
+    const state: HistoryState = { fromApp: true }
+    window.history.pushState(state, '', hashFor(next) || window.location.pathname)
+    setRoute(next)
   }, [])
 
   const goToday = useCallback(() => {
     const state = window.history.state as HistoryState
-    if (state?.habitDetail) {
-      // We pushed the detail entry, so step back to Today (popstate updates state).
+    if (state?.fromApp) {
+      // We pushed this entry, so step back to Today (popstate updates the route).
       window.history.back()
     } else {
       // Opened directly from a link: replace instead, so Back doesn't leave the app.
       window.history.replaceState(null, '', window.location.pathname + window.location.search)
-      setHabitId(null)
+      setRoute(TODAY)
     }
   }, [])
 
-  return { habitId, openHabit, goToday }
+  return { route, navigate, goToday }
 }

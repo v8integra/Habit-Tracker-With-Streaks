@@ -1,9 +1,18 @@
 import { useEffect, useId, useRef } from 'react'
 
-type Props = { habitName: string; onConfirm: () => void; onCancel: () => void }
+type Props = {
+  title: string
+  message: string
+  confirmLabel: string
+  onConfirm: () => void
+  onCancel: () => void
+}
 
-/** The confirm step before deleting. Focus starts on Cancel, the safe choice. */
-export default function DeleteConfirm({ habitName, onConfirm, onCancel }: Props) {
+/**
+ * A confirm step before something that can't be undone (delete, replace, clear).
+ * Focus starts on Cancel, the safe choice, and Escape cancels.
+ */
+export default function ConfirmPanel({ title, message, confirmLabel, onConfirm, onCancel }: Props) {
   const cancelRef = useRef<HTMLButtonElement>(null)
   const titleId = useId()
   const textId = useId()
@@ -14,7 +23,7 @@ export default function DeleteConfirm({ habitName, onConfirm, onCancel }: Props)
 
   return (
     <section
-      className="delete-confirm"
+      className="confirm-panel"
       role="alertdialog"
       aria-labelledby={titleId}
       aria-describedby={textId}
@@ -22,11 +31,11 @@ export default function DeleteConfirm({ habitName, onConfirm, onCancel }: Props)
         if (event.key === 'Escape') onCancel()
       }}
     >
-      <h2 id={titleId}>Delete “{habitName}”?</h2>
-      <p id={textId}>This removes the habit and all of its history. This can’t be undone.</p>
+      <h2 id={titleId}>{title}</h2>
+      <p id={textId}>{message}</p>
       <div className="form-actions">
         <button type="button" className="button button-danger" onClick={onConfirm}>
-          Delete
+          {confirmLabel}
         </button>
         <button ref={cancelRef} type="button" className="button" onClick={onCancel}>
           Cancel

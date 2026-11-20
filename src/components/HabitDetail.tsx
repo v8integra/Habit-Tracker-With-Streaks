@@ -3,7 +3,7 @@ import { getHabitColor } from '../lib/colors.ts'
 import type { DateKey } from '../lib/dates.ts'
 import { habitStats } from '../lib/habits.ts'
 import type { AppData, Habit } from '../lib/types.ts'
-import DeleteConfirm from './DeleteConfirm.tsx'
+import ConfirmPanel from './ConfirmPanel.tsx'
 import HabitForm from './HabitForm.tsx'
 import Heatmap from './Heatmap.tsx'
 import StatTile from './StatTile.tsx'
@@ -89,8 +89,10 @@ export default function HabitDetail({
           onCancel={() => closeTo('edit')}
         />
       ) : mode === 'confirming-delete' ? (
-        <DeleteConfirm
-          habitName={habit.name}
+        <ConfirmPanel
+          title={`Delete “${habit.name}”?`}
+          message="This removes the habit and all of its history. This can’t be undone."
+          confirmLabel="Delete"
           onConfirm={onDelete}
           onCancel={() => closeTo('delete')}
         />

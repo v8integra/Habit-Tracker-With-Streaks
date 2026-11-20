@@ -16,25 +16,28 @@ type Props = {
   today: DateKey
   notice: Notice | null
   /**
-   * A habit card to focus on arrival (when coming back from its detail screen).
-   * If that habit was just deleted, the page heading gets focus instead.
+   * What to focus on arrival, when coming back from another screen: a
+   * `data-focus-key` like "habit:<id>" or "settings". If it's gone (a deleted
+   * habit), the page heading gets focus instead.
    */
-  focusHabitId: string | null
+  focusKey: string | null
   onDismissNotice: () => void
   onAddHabit: (input: { name: string; color: string }) => void
   onToggle: (habitId: string) => void
   onOpen: (habitId: string) => void
+  onOpenSettings: () => void
 }
 
 export default function TodayPage({
   data,
   today,
   notice,
-  focusHabitId,
+  focusKey,
   onDismissNotice,
   onAddHabit,
   onToggle,
   onOpen,
+  onOpenSettings,
 }: Props) {
   const [adding, setAdding] = useState(false)
   const { done, total } = progressOn(data, today)
@@ -42,19 +45,29 @@ export default function TodayPage({
   const headingRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
-    if (focusHabitId === null) return
-    const card = document.querySelector<HTMLElement>(
-      `[data-habit-id="${CSS.escape(focusHabitId)}"]`,
+    if (focusKey === null) return
+    const target = document.querySelector<HTMLElement>(
+      `[data-focus-key="${CSS.escape(focusKey)}"]`,
     )
-    ;(card ?? headingRef.current)?.focus()
-  }, [focusHabitId])
+    ;(target ?? headingRef.current)?.focus()
+  }, [focusKey])
 
   return (
     <main className="page">
       <header className="today-header">
-        <h1 ref={headingRef} tabIndex={-1}>
-          Today
-        </h1>
+        <div className="today-header-top">
+          <h1 ref={headingRef} tabIndex={-1}>
+            Today
+          </h1>
+          <button
+            type="button"
+            className="button button-small"
+            data-focus-key="settings"
+            onClick={onOpenSettings}
+          >
+            Settings
+          </button>
+        </div>
         <p className="today-date">{formatLongDate(today)}</p>
         {hasHabits && <ProgressBar done={done} total={total} />}
       </header>

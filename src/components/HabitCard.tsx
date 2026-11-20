@@ -16,7 +16,7 @@ export default function HabitCard({ habit, done, streak, onToggle, onOpen }: Pro
 
   return (
     <div className={done ? 'habit-card is-done' : 'habit-card'}>
-      <button type="button" className="habit-open" data-habit-id={habit.id} onClick={onOpen}>
+      <button type="button" className="habit-open" data-focus-key={`habit:${habit.id}`} onClick={onOpen}>
         <span className="color-dot" style={{ backgroundColor: color.hex }} aria-hidden="true" />
         <span className="habit-name">{habit.name}</span>
         <StreakBadge days={streak} />

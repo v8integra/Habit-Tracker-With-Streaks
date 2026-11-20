@@ -97,3 +97,17 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - 21 new tests (`EditDelete.test.tsx` plus the lib helpers). The browser check caught focus getting lost after deleting from a habit link; that's now fixed and tested.
 - Plan changes: None
 - Tests: 198 passed, 0 failed
+
+## Slice 8 · Settings
+- Date: 2026-11-20
+- My note: "Code looks good. Tested import and export, both work correctly. Lets continue"
+- What changed:
+  - Added `src/lib/backup.ts` (dated file name, indented JSON, and `parseBackup` with clear errors for bad JSON, another app version, or the wrong shape) and `src/lib/download.ts`.
+  - New `SettingsPage` at `#/settings`, opened from a Settings button on Today:
+    - Export JSON saves the dated file.
+    - Import JSON refuses files over 5 MB and asks before replacing, showing both counts.
+    - Clear all data asks before clearing.
+  - `DeleteConfirm` became a shared `ConfirmPanel`, used for deleting a habit, importing and clearing. `useRoute` now handles Today, a habit and Settings, and focus returns to the button that opened a screen.
+  - 37 new tests (`Settings.test.tsx`, `backup.test.ts`, routes). The browser check caught the wording "all 1 habit", now fixed.
+- Plan changes: None
+- Tests: 235 passed, 0 failed

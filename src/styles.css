@@ -533,7 +533,7 @@ p {
   color: var(--danger);
 }
 
-.delete-confirm {
+.confirm-panel {
   display: grid;
   gap: 12px;
   padding: 16px;
@@ -542,11 +542,64 @@ p {
   border-radius: var(--radius);
 }
 
-.delete-confirm h2 {
+.confirm-panel h2 {
   font-size: 1.1rem;
   overflow-wrap: anywhere;
 }
 
-.delete-confirm p {
+.confirm-panel p {
   color: var(--muted);
+}
+
+/* Settings */
+
+.settings-title {
+  font-size: 1.75rem;
+}
+
+.settings-title:focus {
+  outline: none;
+}
+
+.today-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.settings-section {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.settings-section h2 {
+  font-size: 1.1rem;
+}
+
+.settings-section p {
+  color: var(--muted);
+}
+
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-message {
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  background: var(--done-bg);
+  border: 1px solid var(--border);
+}
+
+.settings-message.is-error {
+  background: var(--surface);
+  border-color: var(--error);
+  color: var(--error);
 }
