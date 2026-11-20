@@ -2,6 +2,7 @@ import { useState } from 'react'
 import type { StorageNotice as Notice } from '../hooks/useAppData.ts'
 import { formatLongDate, type DateKey } from '../lib/dates.ts'
 import { isDoneOn, progressOn } from '../lib/habits.ts'
+import { currentStreak } from '../lib/streaks.ts'
 import type { AppData } from '../lib/types.ts'
 import AddHabitForm from './AddHabitForm.tsx'
 import EmptyState from './EmptyState.tsx'
@@ -47,6 +48,7 @@ export default function TodayPage({
               <HabitCard
                 habit={habit}
                 done={isDoneOn(data, habit.id, today)}
+                streak={currentStreak(data.completions[habit.id] ?? [], habit.createdAt, today)}
                 onToggle={() => onToggle(habit.id)}
               />
             </li>

@@ -194,3 +194,95 @@ describe('Today page', () => {
     }
   })
 })
+
+describe('Streaks on cards', () => {
+  function seed(completions: Record<string, string[]>) {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({
+        version: 1,
+        habits: [
+          { id: 'h1', name: 'Read', color: 'red', createdAt: '2026-11-01' },
+          { id: 'h2', name: 'Walk', color: 'blue', createdAt: '2026-11-01' },
+        ],
+        completions,
+      }),
+    )
+  }
+
+  function card(name: string) {
+    const box = screen.getByRole('checkbox', { name: `${name} done today` })
+    const label = box.closest('label')
+    if (label === null) throw new Error(`No card for ${name}`)
+    return label
+  }
+
+  beforeEach(() => {
+    localStorage.clear()
+    vi.useFakeTimers({ toFake: ['Date'] })
+    vi.setSystemTime(new Date(2026, 10, 20, 9, 0, 0))
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  it('shows no streak for a habit with none', () => {
+    seed({})
+    render(<App />)
+    expect(card('Read')).not.toHaveTextContent('streak')
+    expect(card('Read')).not.toHaveTextContent('🔥')
+  })
+
+  it('shows the streak as "🔥 N", read out as "N-day streak"', () => {
+    seed({ h1: ['2026-11-18', '2026-11-19', '2026-11-20'] })
+    render(<App />)
+    expect(within(card('Read')).getByText('🔥 3')).toHaveAttribute('aria-hidden', 'true')
+    expect(within(card('Read')).getByText('3-day streak')).toHaveClass('sr-only')
+  })
+
+  it('each card shows its own streak', () => {
+    seed({ h1: ['2026-11-19', '2026-11-20'], h2: ['2026-11-20'] })
+    render(<App />)
+    expect(card('Read')).toHaveTextContent('2-day streak')
+    expect(card('Walk')).toHaveTextContent('1-day streak')
+  })
+
+  it('a streak ending yesterday still shows, since today is still open', () => {
+    seed({ h1: ['2026-11-18', '2026-11-19'] })
+    render(<App />)
+    expect(card('Read')).toHaveTextContent('2-day streak')
+  })
+
+  it('a streak broken two days ago is gone', () => {
+    seed({ h1: ['2026-11-16', '2026-11-17', '2026-11-18'] })
+    render(<App />)
+    expect(card('Read')).not.toHaveTextContent('streak')
+  })
+
+  it('updates when checking and unchecking today', async () => {
+    seed({ h1: ['2026-11-18', '2026-11-19'] })
+    const user = userEvent.setup()
+    render(<App />)
+    const box = screen.getByRole('checkbox', { name: 'Read done today' })
+
+    await user.click(box)
+    expect(card('Read')).toHaveTextContent('3-day streak')
+
+    await user.click(box)
+    expect(card('Read')).toHaveTextContent('2-day streak')
+  })
+
+  it('a new habit starts a 1-day streak when checked, and loses it when unchecked', async () => {
+    const user = userEvent.setup()
+    render(<App />)
+    await addHabit(user, 'Stretch')
+    const box = screen.getByRole('checkbox', { name: 'Stretch done today' })
+
+    await user.click(box)
+    expect(card('Stretch')).toHaveTextContent('1-day streak')
+
+    await user.click(box)
+    expect(card('Stretch')).not.toHaveTextContent('streak')
+  })
+})
