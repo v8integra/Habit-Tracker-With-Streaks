@@ -2,6 +2,8 @@ import { isDateKey } from './dates.ts'
 import type { AppData, Completions, Habit } from './types.ts'
 
 export const STORAGE_KEY = 'habit-tracker:v1'
+/** Where broken saved data is copied before starting fresh. Latest copy only. */
+export const BACKUP_KEY = 'habit-tracker:v1:backup'
 export const NAME_MAX_LENGTH = 40
 
 /** The parts of `localStorage` we use, so tests can pass a fake. */
@@ -79,6 +81,19 @@ function browserStorage(): KeyValueStore | null {
   }
 }
 
+/**
+ * Copies broken saved data to BACKUP_KEY, so the next save can't destroy it,
+ * then starts fresh. If the copy fails, it starts fresh anyway.
+ */
+function startFreshFromCorrupt(store: KeyValueStore, raw: string): LoadResult {
+  try {
+    store.setItem(BACKUP_KEY, raw)
+  } catch {
+    // Storage is full or blocked; there's nothing more we can do here.
+  }
+  return { data: emptyData(), status: 'corrupt' }
+}
+
 /** Loads saved data. Never throws: on any problem it starts fresh and says why. */
 export function loadData(store: KeyValueStore | null = browserStorage()): LoadResult {
   if (store === null) return { data: emptyData(), status: 'unavailable' }
@@ -95,11 +110,11 @@ export function loadData(store: KeyValueStore | null = browserStorage()): LoadRe
   try {
     parsed = JSON.parse(raw)
   } catch {
-    return { data: emptyData(), status: 'corrupt' }
+    return startFreshFromCorrupt(store, raw)
   }
 
   const data = parseAppData(parsed)
-  return data === null ? { data: emptyData(), status: 'corrupt' } : { data, status: 'ok' }
+  return data === null ? startFreshFromCorrupt(store, raw) : { data, status: 'ok' }
 }
 
 /** Saves data. Returns false if the browser refused (blocked or full). */

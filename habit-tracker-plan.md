@@ -70,6 +70,7 @@ type AppData = {
 - Store under one localStorage key: `habit-tracker:v1`.
 - Dates are **local** calendar dates as `YYYY-MM-DD` strings, never timestamps, so time zones can't shift a check-off to the wrong day.
 - If saved data is missing or broken, start fresh and show a small notice instead of crashing.
+- Before starting fresh from broken saved data, copy the raw text to `habit-tracker:v1:backup`, so the next save can't destroy it. Only the latest broken copy is kept.
 - Habit names are trimmed, then must be 1–40 characters. Duplicate names are allowed. Habits are listed in the order they were created.
 - The 8 preset colors live in `src/lib/colors.ts` and must read well in light and dark mode.
 - Deleting a habit also removes its completions.
@@ -154,3 +155,5 @@ Test cases to include at minimum: no completions; only today; only yesterday; a 
 ## Changes during the build
 
 <!-- One line each: `- Nb · <title>: <what changed>, from my slice N note` -->
+
+- 3b · Back up broken data: before starting fresh from broken saved data, copy it to `habit-tracker:v1:backup` so the next save can't destroy it, from my slice 3 note

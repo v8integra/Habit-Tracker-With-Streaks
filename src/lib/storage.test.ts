@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  BACKUP_KEY,
   STORAGE_KEY,
   emptyData,
   loadData,
@@ -90,6 +91,60 @@ describe('loadData', () => {
     expect(saveData(sample())).toBe(true)
     expect(loadData()).toEqual({ data: sample(), status: 'ok' })
     localStorage.clear()
+  })
+})
+
+describe('backup of broken data', () => {
+  it('uses the habit-tracker:v1:backup key', () => {
+    expect(BACKUP_KEY).toBe('habit-tracker:v1:backup')
+  })
+
+  it.each([
+    ['not JSON', '{oops'],
+    ['valid JSON with the wrong shape', JSON.stringify({ ...sample(), version: 2 })],
+  ])('copies broken data (%s) to the backup key, word for word', (_label, raw) => {
+    const { store, items } = memoryStore()
+    items.set(STORAGE_KEY, raw)
+    expect(loadData(store).status).toBe('corrupt')
+    expect(items.get(BACKUP_KEY)).toBe(raw)
+  })
+
+  it('keeps the backup after the next save replaces the broken data', () => {
+    const { store, items } = memoryStore()
+    items.set(STORAGE_KEY, '{oops')
+    const { data } = loadData(store)
+    saveData(data, store)
+    expect(items.get(STORAGE_KEY)).toBe(JSON.stringify(emptyData()))
+    expect(items.get(BACKUP_KEY)).toBe('{oops')
+  })
+
+  it('keeps only the latest broken copy', () => {
+    const { store, items } = memoryStore()
+    items.set(STORAGE_KEY, 'first')
+    loadData(store)
+    items.set(STORAGE_KEY, 'second')
+    loadData(store)
+    expect(items.get(BACKUP_KEY)).toBe('second')
+  })
+
+  it('makes no backup when data loads fine', () => {
+    const { store, items } = memoryStore()
+    saveData(sample(), store)
+    loadData(store)
+    expect(items.has(BACKUP_KEY)).toBe(false)
+  })
+
+  it('makes no backup when nothing is saved', () => {
+    const { store, items } = memoryStore()
+    loadData(store)
+    expect(items.has(BACKUP_KEY)).toBe(false)
+  })
+
+  it('still starts fresh if the backup copy fails', () => {
+    const { store, items } = memoryStore({ failSet: true })
+    items.set(STORAGE_KEY, '{oops')
+    expect(loadData(store)).toEqual({ data: emptyData(), status: 'corrupt' })
+    expect(items.has(BACKUP_KEY)).toBe(false)
   })
 })
 

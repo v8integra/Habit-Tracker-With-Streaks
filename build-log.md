@@ -34,3 +34,14 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - Added `src/lib/storage.test.ts` (37 tests): saving and loading back, broken data, storage that fails on read or write, habit validation, date clean-up, and a `__proto__` habit id.
 - Plan changes: None
 - Tests: 78 passed, 0 failed
+
+## Slice 3b · Back up broken data
+- Date: 2026-11-20
+- My note: "Code looks good."
+- What changed:
+  - `src/lib/storage.ts`: added a new `BACKUP_KEY` (`habit-tracker:v1:backup`). When loading finds broken data, it now copies the raw text there before starting fresh, and a failed copy doesn't crash.
+  - `src/lib/storage.test.ts`: 8 new tests. They cover both kinds of broken data, that the backup survives the next save, that only the latest copy is kept, that no backup is made for good or empty data, and that a failed copy is handled.
+- Plan changes:
+  - Data model: "Before starting fresh from broken saved data, copy the raw text to `habit-tracker:v1:backup`, so the next save can't destroy it. Only the latest broken copy is kept."
+  - Changes during the build: "3b · Back up broken data: before starting fresh from broken saved data, copy it to `habit-tracker:v1:backup` so the next save can't destroy it, from my slice 3 note"
+- Tests: 86 passed, 0 failed
