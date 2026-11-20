@@ -2,10 +2,12 @@ import { describe, expect, it } from 'vitest'
 import {
   addHabit,
   createHabit,
+  deleteHabit,
   habitStats,
   isDoneOn,
   progressOn,
   toggleCompletion,
+  updateHabit,
   validateHabitName,
 } from './habits.ts'
 import { emptyData } from './storage.ts'
@@ -124,5 +126,48 @@ describe('habitStats', () => {
     let data = withHabits()
     for (const date of ['2026-11-18', TODAY, '2026-11-22']) data = toggleCompletion(data, 'h1', date)
     expect(habitStats(data, data.habits[0]!, TODAY).total).toBe(1)
+  })
+})
+
+describe('updateHabit', () => {
+  it('renames (trimmed) and recolors one habit, keeping its id and createdAt', () => {
+    const data = updateHabit(withHabits(), 'h1', { name: '  Read more  ', color: 'pink' })
+    expect(data.habits[0]).toEqual({ id: 'h1', name: 'Read more', color: 'pink', createdAt: TODAY })
+  })
+
+  it('leaves other habits and all completions alone', () => {
+    const before = toggleCompletion(withHabits(), 'h1', TODAY)
+    const after = updateHabit(before, 'h1', { name: 'Read more', color: 'pink' })
+    expect(after.habits[1]).toEqual(before.habits[1])
+    expect(after.completions).toEqual(before.completions)
+  })
+
+  it('does not change the original data', () => {
+    const data = withHabits()
+    updateHabit(data, 'h1', { name: 'Other', color: 'pink' })
+    expect(data.habits[0]!.name).toBe('Read')
+  })
+})
+
+describe('deleteHabit', () => {
+  it('removes the habit and its completions', () => {
+    let data = withHabits()
+    data = toggleCompletion(data, 'h1', TODAY)
+    data = toggleCompletion(data, 'h2', TODAY)
+    const after = deleteHabit(data, 'h1')
+    expect(after.habits.map((h) => h.id)).toEqual(['h2'])
+    expect(after.completions).toEqual({ h2: [TODAY] })
+  })
+
+  it('an unknown id changes nothing', () => {
+    const data = toggleCompletion(withHabits(), 'h1', TODAY)
+    expect(deleteHabit(data, 'nope')).toEqual(data)
+  })
+
+  it('does not change the original data', () => {
+    const data = toggleCompletion(withHabits(), 'h1', TODAY)
+    deleteHabit(data, 'h1')
+    expect(data.habits).toHaveLength(2)
+    expect(data.completions.h1).toEqual([TODAY])
   })
 })

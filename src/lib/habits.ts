@@ -24,6 +24,31 @@ export function addHabit(data: AppData, habit: Habit): AppData {
   return { ...data, habits: [...data.habits, habit] }
 }
 
+/** Renames and/or recolors one habit. Its history is kept. */
+export function updateHabit(
+  data: AppData,
+  habitId: string,
+  changes: { name: string; color: string },
+): AppData {
+  return {
+    ...data,
+    habits: data.habits.map((habit) =>
+      habit.id === habitId ? { ...habit, name: changes.name.trim(), color: changes.color } : habit,
+    ),
+  }
+}
+
+/** Removes a habit and all of its completions. */
+export function deleteHabit(data: AppData, habitId: string): AppData {
+  return {
+    ...data,
+    habits: data.habits.filter((habit) => habit.id !== habitId),
+    completions: Object.fromEntries(
+      Object.entries(data.completions).filter(([id]) => id !== habitId),
+    ),
+  }
+}
+
 export function isDoneOn(data: AppData, habitId: string, date: DateKey): boolean {
   return data.completions[habitId]?.includes(date) ?? false
 }

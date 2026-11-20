@@ -9,7 +9,7 @@ import { canToggleDay } from './lib/heatmap.ts'
 
 export default function App() {
   const today = useToday()
-  const { data, notice, add, toggle, dismissNotice } = useAppData()
+  const { data, notice, add, toggle, edit, remove, dismissNotice } = useAppData()
   const { habitId, openHabit, goToday } = useRoute()
   // The card to focus when coming back from a habit's detail screen.
   const [lastOpened, setLastOpened] = useState<string | null>(null)
@@ -22,9 +22,20 @@ export default function App() {
         habit={habit}
         data={data}
         today={today}
-        onBack={goToday}
+        onBack={() => {
+          // Also covers a detail screen opened from a link, not from a card.
+          setLastOpened(habit.id)
+          goToday()
+        }}
         onToggleDay={(date: DateKey) => {
           if (canToggleDay(date, today, habit.createdAt)) toggle(habit.id, date)
+        }}
+        onSave={(changes) => edit(habit.id, changes)}
+        onDelete={() => {
+          // Its card is gone, so Today focuses its heading instead.
+          setLastOpened(habit.id)
+          remove(habit.id)
+          goToday()
         }}
       />
     )

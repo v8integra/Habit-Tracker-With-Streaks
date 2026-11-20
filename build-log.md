@@ -86,3 +86,14 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - 40 new tests (detail screen, heatmap grid, `habitStats`, reading the habit ID from the URL). The slice 4 test where tapping the name checked the habit off now checks that it opens the detail screen.
 - Plan changes: None
 - Tests: 177 passed, 0 failed
+
+## Slice 7 · Edit and delete
+- Date: 2026-11-20
+- My note: "Code is clean, app is clean, tests passing."
+- What changed:
+  - Added `updateHabit` (rename and recolor, history kept) and `deleteHabit` (removes the habit and its check-offs) to `habits.ts`, with matching `edit` and `remove` actions in `useAppData`.
+  - Replaced `AddHabitForm` with a shared `HabitForm`, used both to add and to edit.
+  - The detail screen has Edit and "Delete habit". Delete shows a confirm step (`DeleteConfirm`) with focus on Cancel, and Escape cancels it. After deleting, the app returns to Today with focus on the heading.
+  - 21 new tests (`EditDelete.test.tsx` plus the lib helpers). The browser check caught focus getting lost after deleting from a habit link; that's now fixed and tested.
+- Plan changes: None
+- Tests: 198 passed, 0 failed

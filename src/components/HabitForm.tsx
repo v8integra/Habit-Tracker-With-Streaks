@@ -1,20 +1,31 @@
 import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
-import { nextUnusedColor } from '../lib/colors.ts'
 import { validateHabitName } from '../lib/habits.ts'
 import { NAME_MAX_LENGTH } from '../lib/storage.ts'
 import ColorPicker from './ColorPicker.tsx'
 
 type Props = {
-  usedColors: string[]
-  onAdd: (input: { name: string; color: string }) => void
+  title: string
+  submitLabel: string
+  initialName?: string
+  initialColor: string
+  onSubmit: (input: { name: string; color: string }) => void
   onCancel: () => void
 }
 
-export default function AddHabitForm({ usedColors, onAdd, onCancel }: Props) {
-  const [name, setName] = useState('')
-  const [color, setColor] = useState<string>(() => nextUnusedColor(usedColors).id)
+/** Name + color form, used both to add a habit and to edit one. */
+export default function HabitForm({
+  title,
+  submitLabel,
+  initialName = '',
+  initialColor,
+  onSubmit,
+  onCancel,
+}: Props) {
+  const [name, setName] = useState(initialName)
+  const [color, setColor] = useState(initialColor)
   const [error, setError] = useState<string | null>(null)
   const nameRef = useRef<HTMLInputElement>(null)
+  const titleId = useId()
   const nameId = useId()
   const errorId = useId()
 
@@ -30,12 +41,22 @@ export default function AddHabitForm({ usedColors, onAdd, onCancel }: Props) {
       nameRef.current?.focus()
       return
     }
-    onAdd({ name, color })
+    onSubmit({ name, color })
   }
 
   return (
-    <form className="add-form" onSubmit={handleSubmit} noValidate>
-      <h2 className="add-form-title">New habit</h2>
+    <form
+      className="habit-form"
+      aria-labelledby={titleId}
+      onSubmit={handleSubmit}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape') onCancel()
+      }}
+      noValidate
+    >
+      <h2 id={titleId} className="habit-form-title">
+        {title}
+      </h2>
       <div className="field">
         <label htmlFor={nameId}>Name</label>
         <input
@@ -52,9 +73,6 @@ export default function AddHabitForm({ usedColors, onAdd, onCancel }: Props) {
             setName(event.target.value)
             setError(null)
           }}
-          onKeyDown={(event) => {
-            if (event.key === 'Escape') onCancel()
-          }}
         />
         {error !== null && (
           <p id={errorId} className="field-error" role="alert">
@@ -65,7 +83,7 @@ export default function AddHabitForm({ usedColors, onAdd, onCancel }: Props) {
       <ColorPicker value={color} onChange={setColor} />
       <div className="form-actions">
         <button type="submit" className="button button-primary">
-          Add
+          {submitLabel}
         </button>
         <button type="button" className="button" onClick={onCancel}>
           Cancel

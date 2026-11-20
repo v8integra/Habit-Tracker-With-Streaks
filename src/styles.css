@@ -11,6 +11,8 @@
   --notice-bg: #fff7e0;
   --notice-border: #e8c860;
   --error: #c62828;
+  --danger: #c62828;
+  --danger-text: #ffffff;
   --radius: 12px;
   --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
 }
@@ -28,6 +30,8 @@
     --notice-bg: #2e2812;
     --notice-border: #6b5a1e;
     --error: #ef6b6b;
+    --danger: #ef6b6b;
+    --danger-text: #1a0606;
   }
 }
 
@@ -243,9 +247,9 @@ p {
   margin-bottom: 8px;
 }
 
-/* Add habit form */
+/* Habit form (add and edit) */
 
-.add-form {
+.habit-form {
   display: grid;
   gap: 16px;
   padding: 16px;
@@ -254,7 +258,7 @@ p {
   border-radius: var(--radius);
 }
 
-.add-form-title {
+.habit-form-title {
   font-size: 1.1rem;
 }
 
@@ -504,4 +508,45 @@ p {
 .heatmap-cell.is-editable:focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 1px;
+}
+
+.today-header h1:focus {
+  outline: none;
+}
+
+/* Edit and delete */
+
+.detail-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.button-danger {
+  background: var(--danger);
+  border-color: var(--danger);
+  color: var(--danger-text);
+  font-weight: 600;
+}
+
+.button-danger-outline {
+  color: var(--danger);
+}
+
+.delete-confirm {
+  display: grid;
+  gap: 12px;
+  padding: 16px;
+  background: var(--surface);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+}
+
+.delete-confirm h2 {
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.delete-confirm p {
+  color: var(--muted);
 }

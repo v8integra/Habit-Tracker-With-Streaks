@@ -1,12 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { StorageNotice as Notice } from '../hooks/useAppData.ts'
+import { nextUnusedColor } from '../lib/colors.ts'
 import { formatLongDate, type DateKey } from '../lib/dates.ts'
 import { isDoneOn, progressOn } from '../lib/habits.ts'
 import { currentStreak } from '../lib/streaks.ts'
 import type { AppData } from '../lib/types.ts'
-import AddHabitForm from './AddHabitForm.tsx'
 import EmptyState from './EmptyState.tsx'
 import HabitCard from './HabitCard.tsx'
+import HabitForm from './HabitForm.tsx'
 import ProgressBar from './ProgressBar.tsx'
 import StorageNotice from './StorageNotice.tsx'
 
@@ -14,7 +15,10 @@ type Props = {
   data: AppData
   today: DateKey
   notice: Notice | null
-  /** A habit card to focus on arrival (when coming back from its detail screen). */
+  /**
+   * A habit card to focus on arrival (when coming back from its detail screen).
+   * If that habit was just deleted, the page heading gets focus instead.
+   */
   focusHabitId: string | null
   onDismissNotice: () => void
   onAddHabit: (input: { name: string; color: string }) => void
@@ -35,19 +39,22 @@ export default function TodayPage({
   const [adding, setAdding] = useState(false)
   const { done, total } = progressOn(data, today)
   const hasHabits = data.habits.length > 0
+  const headingRef = useRef<HTMLHeadingElement>(null)
 
   useEffect(() => {
     if (focusHabitId === null) return
     const card = document.querySelector<HTMLElement>(
       `[data-habit-id="${CSS.escape(focusHabitId)}"]`,
     )
-    card?.focus()
+    ;(card ?? headingRef.current)?.focus()
   }, [focusHabitId])
 
   return (
     <main className="page">
       <header className="today-header">
-        <h1>Today</h1>
+        <h1 ref={headingRef} tabIndex={-1}>
+          Today
+        </h1>
         <p className="today-date">{formatLongDate(today)}</p>
         {hasHabits && <ProgressBar done={done} total={total} />}
       </header>
@@ -71,9 +78,11 @@ export default function TodayPage({
       )}
 
       {adding ? (
-        <AddHabitForm
-          usedColors={data.habits.map((h) => h.color)}
-          onAdd={(input) => {
+        <HabitForm
+          title="New habit"
+          submitLabel="Add"
+          initialColor={nextUnusedColor(data.habits.map((h) => h.color)).id}
+          onSubmit={(input) => {
             onAddHabit(input)
             setAdding(false)
           }}

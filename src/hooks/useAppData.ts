@@ -1,6 +1,12 @@
 import { useCallback, useRef, useState } from 'react'
 import type { DateKey } from '../lib/dates.ts'
-import { addHabit, createHabit, toggleCompletion } from '../lib/habits.ts'
+import {
+  addHabit,
+  createHabit,
+  deleteHabit,
+  toggleCompletion,
+  updateHabit,
+} from '../lib/habits.ts'
 import { newId } from '../lib/ids.ts'
 import { loadData, saveData } from '../lib/storage.ts'
 import type { AppData } from '../lib/types.ts'
@@ -52,7 +58,21 @@ export function useAppData() {
     [update],
   )
 
+  const edit = useCallback(
+    (habitId: string, changes: { name: string; color: string }) => {
+      update((d) => updateHabit(d, habitId, changes))
+    },
+    [update],
+  )
+
+  const remove = useCallback(
+    (habitId: string) => {
+      update((d) => deleteHabit(d, habitId))
+    },
+    [update],
+  )
+
   const dismissNotice = useCallback(() => setNotice(null), [])
 
-  return { data, notice, add, toggle, dismissNotice }
+  return { data, notice, add, toggle, edit, remove, dismissNotice }
 }
