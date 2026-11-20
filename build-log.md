@@ -24,3 +24,13 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - Removed `src/lib/.gitkeep`.
 - Plan changes: None
 - Tests: 41 passed, 0 failed
+
+## Slice 3 · Storage
+- Date: 2026-11-20
+- My note: "Code looks clean. No issues seen at this time. Lets continue."
+- What changed:
+  - Added `src/lib/types.ts` with the `Habit`, `Completions` and `AppData` types.
+  - Added `src/lib/storage.ts`. `loadData` never throws and returns a status (`ok`, `empty`, `corrupt` or `unavailable`). `saveData` returns false instead of throwing. `parseAppData` validates the data's shape, and import will reuse it in slice 8.
+  - Added `src/lib/storage.test.ts` (37 tests): saving and loading back, broken data, storage that fails on read or write, habit validation, date clean-up, and a `__proto__` habit id.
+- Plan changes: None
+- Tests: 78 passed, 0 failed
