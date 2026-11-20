@@ -3,7 +3,7 @@
 ## Commands
 - Dev server: npm run dev
 - Tests: npm test
-- Type check: npx tsc --noEmit
+- Type check: npm run typecheck
 - Build: npm run build
 
 ## Rules

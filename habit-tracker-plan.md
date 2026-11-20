@@ -16,6 +16,7 @@ A small, polished web app where someone adds daily habits, checks them off each 
 4. Write tests for the streak and date logic before or alongside the code (slice 2).
 5. If anything in this plan is unclear or seems wrong, ask instead of guessing.
 6. I'm on Windows. Use commands that work in PowerShell.
+7. `CLAUDE.md` already exists. Keep it as it is; don't recreate it in slice 1.
 
 ## Must have
 
@@ -36,12 +37,14 @@ A small, polished web app where someone adds daily habits, checks them off each 
 - Reminders or notifications.
 - Charts beyond the heatmap.
 - Editing past days older than 7 days.
+- Archiving habits.
 
 ## Tech stack
 
 - Vite + React + TypeScript
 - Plain CSS modules or a single `styles.css` with CSS variables (no UI framework)
 - Vitest + React Testing Library for tests
+- Pre-approved dev dependencies: `jsdom`, `@testing-library/jest-dom`, `@testing-library/user-event`, and the ESLint packages that come with the Vite React template.
 - `date-fns` for date math (only date library allowed)
 - No other dependencies without asking me first
 
@@ -53,7 +56,6 @@ type Habit = {
   name: string;        // 1–40 characters
   color: string;       // one of 8 preset colors
   createdAt: string;   // "YYYY-MM-DD"
-  archived: boolean;
 };
 
 type Completions = Record<string, string[]>; // habitId -> list of "YYYY-MM-DD"
@@ -68,6 +70,9 @@ type AppData = {
 - Store under one localStorage key: `habit-tracker:v1`.
 - Dates are **local** calendar dates as `YYYY-MM-DD` strings, never timestamps, so time zones can't shift a check-off to the wrong day.
 - If saved data is missing or broken, start fresh and show a small notice instead of crashing.
+- Habit names are trimmed, then must be 1–40 characters. Duplicate names are allowed. Habits are listed in the order they were created.
+- The 8 preset colors live in `src/lib/colors.ts` and must read well in light and dark mode.
+- Deleting a habit also removes its completions.
 
 ## Streak rules (put these in tests)
 
@@ -76,8 +81,10 @@ type AppData = {
 - **Best streak:** the longest run of consecutive completed days ever.
 - Days before the habit's `createdAt` never count against it.
 - Duplicate dates in the data are ignored.
+- Dates before `createdAt` or after today are ignored, including in imported data.
+- Streak functions take `today` as a parameter, so tests never depend on the real date.
 
-Test cases to include at minimum: no completions; only today; only yesterday; a 5-day run ending today; a 5-day run ending yesterday; a run broken two days ago; best streak in the past longer than the current one; a month boundary (Jan 31 → Feb 1); a year boundary (Dec 31 → Jan 1); duplicate dates.
+Test cases to include at minimum: no completions; only today; only yesterday; a 5-day run ending today; a 5-day run ending yesterday; a run broken two days ago; best streak in the past longer than the current one; a month boundary (Jan 31 → Feb 1); a year boundary (Dec 31 → Jan 1); duplicate dates; a completion before createdAt is ignored.
 
 ## Screens
 
@@ -86,12 +93,15 @@ Test cases to include at minimum: no completions; only today; only yesterday; a 
    - A list of habit cards: color dot, name, checkbox, current streak ("🔥 12" or "12-day streak").
    - "Add habit" button.
    - Empty state: a friendly message and an "Add your first habit" button.
+   - If the app is left open past midnight, the view moves to the new day.
 2. **Habit detail** (opens from a card)
    - Name, current streak, best streak, total completions.
-   - 12-week heatmap (7 rows × 12 columns, today in the bottom-right). Tapping a day in the last 7 days toggles it.
+   - 12-week heatmap: 7 rows (weekdays, Sunday on top) × 12 columns (weeks, oldest on the left). Today is in the rightmost column, so that column is only filled down to today.
+   - The "last 7 days" are today and the 6 days before it. Tapping one of those days toggles it. Days before the habit's `createdAt` can't be toggled.
    - Rename, change color, delete (with a confirm step).
 3. **Settings** (small panel or page)
    - Export JSON, import JSON (with a confirm before replacing data), clear all data (with a confirm).
+   - If an imported file isn't valid JSON or isn't version 1, show an error and leave the current data alone.
 
 ## Build slices (in order)
 
@@ -122,7 +132,7 @@ Test cases to include at minimum: no completions; only today; only yesterday; a 
 ## Commands
 - Dev server: npm run dev
 - Tests: npm test
-- Type check: npx tsc --noEmit
+- Type check: npm run typecheck
 - Build: npm run build
 
 ## Rules
@@ -140,3 +150,7 @@ Test cases to include at minimum: no completions; only today; only yesterday; a 
 - **Moments to show on screen:** writing this plan; the streak tests catching a bug (the month or year boundary is a good candidate); reviewing a diff and pushing back on something; the final deploy and live link.
 - **Shorts from this build:** "The one bug every habit tracker has (time zones)" and "Plan → build → test in 60 seconds."
 - **End screen:** link to Snake With Power-Ups (Saturday's build) and the AI engineering workflow video.
+
+## Changes during the build
+
+<!-- One line each: `- Nb · <title>: <what changed>, from my slice N note` -->
