@@ -62,3 +62,14 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - `App.test.tsx` now tests the full Today flow: adding, checking off and unchecking, data kept after a refresh, local dates late at night, and the storage notices.
 - Plan changes: None
 - Tests: 130 passed, 0 failed
+
+## Slice 5 · Streaks on cards
+- Date: 2026-11-20
+- My note: "Code as been reviewed, all looks clean. App tested, full functional. Committed to Github."
+- What changed (the code landed in my own commit `feab938`; this checkpoint adds only this log entry):
+  - Added `src/components/StreakBadge.tsx`. It shows "🔥 N", reads as "N-day streak" for screen readers, and is hidden when there's no streak.
+  - `HabitCard` shows the badge, and `TodayPage` works out each card's current streak with `currentStreak`, so it updates as soon as today is checked or unchecked.
+  - `styles.css`: added badge styling and a `.sr-only` class.
+  - `App.test.tsx`: 7 new streak tests (none, the badge text and what screen readers hear, separate streaks per card, a streak ending yesterday, a broken streak, check and uncheck, a new habit).
+- Plan changes: None
+- Tests: 137 passed, 0 failed
