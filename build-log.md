@@ -45,3 +45,20 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - Data model: "Before starting fresh from broken saved data, copy the raw text to `habit-tracker:v1:backup`, so the next save can't destroy it. Only the latest broken copy is kept."
   - Changes during the build: "3b · Back up broken data: before starting fresh from broken saved data, copy it to `habit-tracker:v1:backup` so the next save can't destroy it, from my slice 3 note"
 - Tests: 86 passed, 0 failed
+
+## Slice 4 · Today view
+- Date: 2026-11-20
+- My note: "Code is clean. App runs correctly. Lets continue"
+- What changed:
+  - New lib code with tests:
+    - `colors.ts`: 8 presets, stored by name.
+    - `habits.ts`: name checks, adding habits, checking off or unchecking a day, and progress.
+    - `ids.ts`: `randomUUID` with a fallback for plain HTTP.
+    - `dates.ts`: the time until midnight, and the header date.
+  - Hooks:
+    - `useAppData` loads once and saves on each change; just opening the app never writes.
+    - `useToday` rolls over at midnight and when the tab becomes visible again.
+  - Today page components (TodayPage, ProgressBar, HabitCard, AddHabitForm, ColorPicker, EmptyState, StorageNotice), plus styles for light and dark mode.
+  - `App.test.tsx` now tests the full Today flow: adding, checking off and unchecking, data kept after a refresh, local dates late at night, and the storage notices.
+- Plan changes: None
+- Tests: 130 passed, 0 failed

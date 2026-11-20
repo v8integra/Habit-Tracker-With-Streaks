@@ -1,4 +1,4 @@
-import { addDays, format, isValid, parse } from 'date-fns'
+import { addDays, format, isValid, parse, startOfDay } from 'date-fns'
 
 /** A local calendar date as "YYYY-MM-DD". Never a timestamp. */
 export type DateKey = string
@@ -26,6 +26,16 @@ export function isDateKey(value: unknown): value is DateKey {
   if (typeof value !== 'string' || !DATE_KEY_PATTERN.test(value)) return false
   const date = parseDateKey(value)
   return isValid(date) && toDateKey(date) === value
+}
+
+/** Milliseconds from `now` until the next local midnight. */
+export function msUntilNextMidnight(now: Date): number {
+  return addDays(startOfDay(now), 1).getTime() - now.getTime()
+}
+
+/** A date key as a heading, e.g. "Friday, November 20". */
+export function formatLongDate(key: DateKey): string {
+  return format(parseDateKey(key), 'EEEE, MMMM d')
 }
 
 /** Moves a date key by whole calendar days (negative goes back). */

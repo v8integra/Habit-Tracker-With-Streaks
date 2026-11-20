@@ -1,5 +1,30 @@
 import { describe, expect, it } from 'vitest'
-import { addDaysToKey, isDateKey, parseDateKey, toDateKey, todayKey } from './dates.ts'
+import {
+  addDaysToKey,
+  formatLongDate,
+  isDateKey,
+  msUntilNextMidnight,
+  parseDateKey,
+  toDateKey,
+  todayKey,
+} from './dates.ts'
+
+describe('msUntilNextMidnight', () => {
+  it('counts to the next local midnight', () => {
+    expect(msUntilNextMidnight(new Date(2026, 10, 20, 23, 59, 0))).toBe(60_000)
+    expect(msUntilNextMidnight(new Date(2026, 10, 20, 12, 0, 0))).toBe(12 * 60 * 60 * 1000)
+  })
+
+  it('at exactly midnight, waits a full day', () => {
+    expect(msUntilNextMidnight(new Date(2026, 10, 20))).toBeGreaterThanOrEqual(23 * 60 * 60 * 1000)
+  })
+})
+
+describe('formatLongDate', () => {
+  it('formats a heading date', () => {
+    expect(formatLongDate('2026-11-20')).toBe('Friday, November 20')
+  })
+})
 
 describe('toDateKey', () => {
   it('uses the local calendar date, not UTC', () => {
