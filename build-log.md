@@ -13,3 +13,14 @@ One entry per slice, added by `/checkpoint` after each slice is approved. Change
   - Pre-build fixes: kept the existing CLAUDE.md; pre-approved test dev dependencies; removed `archived`; name, color and delete rules; ignore dates before `createdAt` or after today; streak functions take `today`; heatmap uses weekday rows with Sunday on top; "last 7 days" means today plus the 6 days before; midnight rollover; import validation; "Archiving habits" moved to Not in this version; added the "Changes during the build" section.
   - Suggested CLAUDE.md: type check is now `npm run typecheck`.
 - Tests: 1 passed, 0 failed
+
+## Slice 2 · Date and streak logic
+- Date: 2026-11-20
+- My note: "The code looks clean. Need to check why the terminal is opening in incorrect locations."
+- What changed:
+  - Added `src/lib/dates.ts`: local "YYYY-MM-DD" helpers built on date-fns (`toDateKey`, `todayKey`, `parseDateKey`, `isDateKey`, `addDaysToKey`).
+  - Added `src/lib/streaks.ts`: `currentStreak`, `bestStreak` and `countableDates`, which ignore duplicates, invalid dates, dates before `createdAt` and dates after today.
+  - Added `src/lib/dates.test.ts` (21 tests) and `src/lib/streaks.test.ts` (19 tests), covering every case in the plan plus leap day, daylight saving and 11:59 pm local time. They also pass in six time zones.
+  - Removed `src/lib/.gitkeep`.
+- Plan changes: None
+- Tests: 41 passed, 0 failed
